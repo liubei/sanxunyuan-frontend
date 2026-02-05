@@ -2,7 +2,7 @@
 import { onMounted, onBeforeUnmount, ref } from 'vue'
 import * as echarts from 'echarts'
 
-const host = 'http://api.sanxunyuan.top'
+const host = '//api.sanxunyuan.top'
 
 interface Metric {
   id: number
