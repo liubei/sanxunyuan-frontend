@@ -1,0 +1,48 @@
+# .github/workflows/deploy.yml
+name: Deploy to GitHub Pages
+
+on:
+  # 每当 push 到 main 分支时触发部署
+  push:
+    branches: [ main ]
+  # 允许你手动在 GitHub 界面上触发部署
+  workflow_dispatch:
+
+# 设置 GITHUB_TOKEN 的权限，以允许部署到 GitHub Pages
+permissions:
+  contents: read
+  pages: write  # 需要写入权限以便部署到 Pages
+  id-token: write # 需要验证身份以便部署到 Pages
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4 # 使用最新版本的 checkout action
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # 使用与你本地开发环境兼容的 Node.js 版本，Vite 项目建议 18+
+
+      - name: Install Dependencies
+        run: npm ci # 安装依赖
+
+      - name: Build
+        run: npm run build # 执行构建命令
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './dist' # 上传构建后的 dist 文件夹
+
+      - name: Deploy to GitHub Pages
+        id: deployment # 为这个步骤设置 id，以便后续步骤引用
+        uses: actions/deploy-pages@v4
